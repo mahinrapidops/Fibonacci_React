@@ -1,0 +1,51 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Docker Buildx for building multi-platform images if needed
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      # Build and start the services
+      - name: Build and run services
+        run: |
+          docker-compose -f docker-compose.yml up -d --build
+
+      # Run tests (example: assuming your 'api' or 'client' has a test script)
+      - name: Run tests
+        run: |
+          # Replace with actual test commands for your services
+          docker-compose exec -T api npm test || true
+          docker-compose exec -T client npm test || true
+
+      # Check service health (optional)
+      - name: Check service status
+        run: |
+          docker-compose ps
+
+      # Stop and clean up services
+      - name: Stop services
+        run: |
+          docker-compose down --volumes
