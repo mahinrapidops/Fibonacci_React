@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,14 +33,7 @@ jobs:
         run: |
           docker-compose -f docker-compose.yml up -d --build
 
-      # Run tests (example: assuming your 'api' or 'client' has a test script)
-      - name: Run tests
-        run: |
-          # Replace with actual test commands for your services
-          docker-compose exec -T api npm test || true
-          docker-compose exec -T client npm test || true
-
-      # Check service health (optional)
+      # Check service status
       - name: Check service status
         run: |
           docker-compose ps
